@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/index.css';
 import App from './components/App';
+import { BrowserRouter } from 'react-router-dom';
 // import * as serviceWorker from './serviceWorker';
 
 //1 Assorted Imports.
@@ -24,9 +25,11 @@ const client = new ApolloClient({
 //4 : Wrap your App component in the ApolloProvider higher-order component (with client passed into props)
 // Higher Order Components are components that modify the behavior of the components that are nested in them?
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </BrowserRouter>,
   document.getElementById('root')
 );
 

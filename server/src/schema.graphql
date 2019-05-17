@@ -5,6 +5,8 @@ type Query {
   feed(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): Feed!
 }
 
+# recall: enums are a special type of scalars that are restricted to a particular set of values...
+# /\ LinkOrderByInput will always be one of tehse tyeps!
 enum LinkOrderByInput {
   description_ASC
   description_DESC
@@ -25,6 +27,7 @@ type Mutation {
   login(email: String!, password: String!): AuthPayload
   vote(linkId: ID!): Vote!
 }
+
 
 type Subscription {
   newLink: Link
