@@ -1,0 +1,7 @@
+* What are GraphQL Subscriptions?
+  * Subscriptions are a GraphQL feature allowing the server to send data to its clients when a specific EVENT happens. Subscriptions are usually implemented with WEBSOCKETS, where the server holds a steady connection to the client.
+  * This means that when you're working with subscriptions, you're breaking the REQUEST-RESPONSE-CYCLE that was used for all previous interactions with the API. The client now initiates a steady connection with the server by specifying which event it is interested in. Every time this particular event then happens, the server uses the connection to push the expected data to the client.
+
+* Subscriptions with Apollo
+  * When using Apollo, you need to configure your ApolloClient with information about its subscriptions endpoint. This is done by adding another ApolloLink to the Apollo middleware chain. This time, it's the WebSocketLink from the apollo-link-ws package.
+  

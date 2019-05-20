@@ -1,19 +1,38 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { APP_SECRET, getUserId } = require('../utils')
+const {
+  APP_SECRET,
+  getUserId
+} = require('../utils')
 
-function post(parent, args, context) {
+// # With this, you're extracting hte userID from the Authorization header of the request and use it to directly connect it with the Link that's created. Note that getUserId will throw an error if the field is not provided or not valid token could be extracted
+// # Quiz: How are HTTP requests sent by ApolloClient authenticated? A: By attaching an authentication token to the request with dedicated ApolloLink middleware
+function post(parent, {
+  url,
+  description
+}, context) {
+  const userId = getUserId(context)
   return context.prisma.createLink({
-    url: args.url,
-    description: args.description,
+    url,
+    description,
+    postedBy: {
+      connect: {
+        id: userId
+      }
+    }
   })
 }
 
 async function signup(parent, args, context) {
   const password = await bcrypt.hash(args.password, 10)
-  const user = await context.prisma.createUser({ ...args, password })
+  const user = await context.prisma.createUser({
+    ...args,
+    password
+  })
 
-  const token = jwt.sign({ userId: user.id }, APP_SECRET)
+  const token = jwt.sign({
+    userId: user.id
+  }, APP_SECRET)
 
   return {
     token,
@@ -22,7 +41,9 @@ async function signup(parent, args, context) {
 }
 
 async function login(parent, args, context) {
-  const user = await context.prisma.user({ email: args.email })
+  const user = await context.prisma.user({
+    email: args.email
+  })
   if (!user) {
     throw new Error('No such user found')
   }
@@ -33,7 +54,9 @@ async function login(parent, args, context) {
   }
 
   return {
-    token: jwt.sign({ userId: user.id }, APP_SECRET),
+    token: jwt.sign({
+      userId: user.id
+    }, APP_SECRET),
     user,
   }
 }
@@ -41,16 +64,28 @@ async function login(parent, args, context) {
 async function vote(parent, args, context) {
   const userId = getUserId(context)
   const linkExists = await context.prisma.$exists.vote({
-    user: { id: userId },
-    link: { id: args.linkId },
+    user: {
+      id: userId
+    },
+    link: {
+      id: args.linkId
+    },
   })
   if (linkExists) {
     throw new Error(`Already voted for link: ${args.linkId}`)
   }
 
   return context.prisma.createVote({
-    user: { connect: { id: userId } },
-    link: { connect: { id: args.linkId } },
+    user: {
+      connect: {
+        id: userId
+      }
+    },
+    link: {
+      connect: {
+        id: args.linkId
+      }
+    },
   })
 }
 

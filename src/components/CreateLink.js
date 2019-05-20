@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
-
+import { FEED_QUERY } from './LinkList'
 
 const POST_MUTATION = gql`
   mutation PostMutation($description: String!, $url: String!) {
@@ -45,7 +45,20 @@ class CreateLink extends Component {
           />
         </div>
         {/* Note: The description and url passed in as variables to the Mutation component as props are the destructured description and url from the component's local state, which are updated via the onChange methods on the input components above */}
-        <Mutation mutation={POST_MUTATION} variables={{ description, url }} onCompleted={() => this.props.history.push('/')}>
+        {/* Note: The udpate function works in a very similar way as before. You first read the current state of the results of the FEED_QUERY, then you insert the newest link at the beginning and write the results back to the store. */}
+        <Mutation
+          mutation={POST_MUTATION}
+          variables={{ description, url }}
+          onCompleted={() => this.props.history.push('/')}
+          update={(store, { data: { post } }) => {
+            const data = store.readQuery({ query: FEED_QUERY });
+            data.feed.links.unshift(post);
+            store.writeQuery({
+              query: FEED_QUERY,
+              data
+            })
+          }}
+        >
           {postMutation => (
             <button onClick={postMutation}>Submit</button>
           )}
