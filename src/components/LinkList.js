@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 
 export const FEED_QUERY = gql`
-  {
+  query GETLINKS{
     feed {
       links {
         id
@@ -97,11 +97,19 @@ class LinkList extends Component {
     /**
      * Explanation:
      * document: This represents the subscription query itself. In your case, the subscription will fire every time a new link is  created.
-     * updateQuery: Similar to a cache update prop, this function allows you to determine how the store should be updated with the information that was sent by the server after the event occured. In fact, it follows exactly teh same principles as a Redux reducer: It takes as arguments the previous state (of the query that subscribeToMore was called on)... and the subscription data that's sent by the server. You can then determine how to merge the subscription data into the existing state and return the updated data. All you're doing inside updateQuery is retrieving the new link from the received subscriptionData, merging it into the existing list of links and returning the result of this operation.
+     * updateQuery: Similar to a cache update prop, this function allows you to determine how the store should be updated with the information that was sent by the server after the event occurred. In fact, it follows exactly the same principles as a Redux reducer: It takes as arguments the previous state (of the query that subscribeToMore was called on)... and the subscription data that's sent by the server. You can then determine how to merge the subscription data into the existing state and return the updated data. All you're doing inside updateQuery is retrieving the new link from the received subscriptionData, merging it into the existing list of links and returning the result of this operation.
      */
     subscribeToMore({
       document: NEW_LINKS_SUBSCRIPTION,
+      // subscriptionData represents the information coming back from the subscription.
+      // We'll be merging that incoming data
       updateQuery: (prev, { subscriptionData }) => {
+
+        /** */
+        console.log("YYY", prev);
+        console.log("XXX", subscriptionData);
+
+        // 
         if (!subscriptionData.data) return prev
         const newLink = subscriptionData.data.newLink
         const exists = prev.feed.links.find(({ id }) => id === newLink.id);
@@ -137,7 +145,7 @@ class LinkList extends Component {
           if (error) { return <div>Error</div> }
           // Success!
 
-          this._subscribeToNewLinks(subscribeToMore)
+          this._subscribeToNewLinks(subscribeToMore) //SEE HERE ALYVIA! :)
           this._subscribeToNewVotes(subscribeToMore)
           const linksToRender = data.feed.links //the array of links returned form the query
 

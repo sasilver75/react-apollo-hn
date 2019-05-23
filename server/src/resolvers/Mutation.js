@@ -23,6 +23,8 @@ function post(parent, {
   })
 }
 
+
+
 async function signup(parent, args, context) {
   const password = await bcrypt.hash(args.password, 10)
   const user = await context.prisma.createUser({
@@ -38,6 +40,16 @@ async function signup(parent, args, context) {
     token,
     user,
   }
+}
+
+async function updateLink(root, args, context, info) {
+  const articleToMutate = await context.prisma.link({
+    id: args.id
+  }) // works
+  if (!articleToMutate) {
+    throw new Error('No such article exists')
+  }
+
 }
 
 async function login(parent, args, context) {

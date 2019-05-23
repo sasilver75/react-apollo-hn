@@ -8,7 +8,7 @@ import { AUTH_TOKEN } from './constants'
 import { split } from 'apollo-link'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
-
+import OptimizedInMemoryCache from './testCache';
 
 // import * as serviceWorker from './serviceWorker';
 
@@ -75,8 +75,10 @@ const link = split(
 //3: Create the client with our httpLink and our cache (this is where we'd drop in our future cache!)
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache()
+  cache: new OptimizedInMemoryCache(["GETLINKS"]) // default config args
 });
+
+
 
 //4 : Wrap your App component in the ApolloProvider higher-order component (with client passed into props)
 // Higher Order Components are components that modify the behavior of the components that are nested in them?
